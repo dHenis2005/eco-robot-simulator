@@ -1,15 +1,16 @@
 package entities;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.PlantInput;
 
 public class Plant extends Entity {
-    String type;
     double status = 0;
     double growthRate = 0;
     double oxygenPlant = 0;
     double stuckPossibility = 0;
 
     public Plant(PlantInput input){
-        super(input.getName(), input.getMass());
+        super(input.getName(), input.getMass(), input.getType());
         this.type = input.getType();
     }
     public void oxygenGeneration() {

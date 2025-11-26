@@ -1,4 +1,6 @@
 package entities;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.AnimalInput;
 
 public class Animal extends Entity {
@@ -7,7 +9,7 @@ public class Animal extends Entity {
     double organicMatterIncrement = 0;
     double attackChance = 0;
     public Animal(AnimalInput input){
-        super(input.getName(), input.getMass());
+        super(input.getName(), input.getMass(),  input.getType());
         this.type = input.getType();
     }
     public void feed(Animal prey, Plant plant) {

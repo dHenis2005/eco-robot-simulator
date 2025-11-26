@@ -1,5 +1,7 @@
 package entities.soil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.Soil;
 import fileio.SoilInput;
 
@@ -17,4 +19,11 @@ public class ForestSoil extends Soil {
     public double blockBot() {
         return (waterRetention * 0.6 + leafLitter * 0.4) / 80 * 100;
     }
+    @Override
+    public ObjectNode toJSON(ObjectMapper mapper) {
+        ObjectNode node = super.toJSON(mapper);
+        node.put("leafLitter", leafLitter);
+        return node;
+    }
+
 }

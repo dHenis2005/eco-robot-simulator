@@ -8,14 +8,16 @@ public class Water extends Entity {
     double turbidity;
     double contaminantIndex;
     boolean isFrozen;
+    String type;
     public Water(WaterInput input) {
-        super(input.getName(), input.getMass());
+        super(input.getName(), input.getMass(), input.getType());
         this.salinity = input.getSalinity();
         this.pH = input.getPH();
         this.purity = input.getPurity();
         this.turbidity = input.getTurbidity();
         this.contaminantIndex = input.getContaminantIndex();
         this.isFrozen = input.isFrozen();
+        this.type = input.getType();
     }
     public double waterQuality() {
         double purity_score        = purity / 100;

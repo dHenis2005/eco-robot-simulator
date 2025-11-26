@@ -1,5 +1,7 @@
 package entities.soil;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.Soil;
 import fileio.SoilInput;
 
@@ -17,4 +19,11 @@ public class GrasslandSoil extends Soil {
     public double blockBot() {
         return ((50 - rootDensity) + waterRetention * 0.5) / 75 * 100;
     }
+    @Override
+    public ObjectNode toJSON(ObjectMapper mapper) {
+        ObjectNode node = super.toJSON(mapper);
+        node.put("rootDensity", rootDensity);
+        return node;
+    }
+
 }

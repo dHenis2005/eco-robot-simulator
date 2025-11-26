@@ -1,5 +1,7 @@
 package entities.air;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.Air;
 import fileio.AirInput;
 
@@ -16,5 +18,11 @@ public class Desert extends Air {
     @Override
     public double getMaxScore() {
         return 65.0;
+    }
+    @Override
+    public ObjectNode toJSON(ObjectMapper mapper) {
+        ObjectNode node = super.toJSON(mapper);
+        node.put("dustParticles", dustParticles);
+        return node;
     }
 }
