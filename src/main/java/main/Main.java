@@ -3,14 +3,8 @@ package main;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import fileio.CommandInput;
 import fileio.InputLoader;
-import fileio.SimulationInput;
-import simulation.Simulation;
-import commands.*;
-import simulation.TerritorySectionParams;
-
+import simulation.Manager;
 import java.io.File;
 import java.io.IOException;
 
@@ -36,51 +30,8 @@ public final class Main {
         InputLoader inputLoader = new InputLoader(inputPath);
         ArrayNode output = MAPPER.createArrayNode();
 
-        for (SimulationInput simIn: inputLoader.getSimulations()) {
-            Simulation s = null;
-            boolean sStarted =  false;
-            for (CommandInput comIn : inputLoader.getCommands()) {
-                switch (comIn.getCommand()) {
-                    case "startSimulation":
-                        s = SimulationCommands.startSimulation(simIn);
-                        s.createMap(simIn);
-                        sStarted = true;
-                        ObjectNode startNode = MAPPER.createObjectNode();
-                        startNode.put("command", "startSimulation");
-                        startNode.put("message", "Simulation has started.");
-                        startNode.put("timestamp", comIn.getTimestamp());
-                        output.add(startNode);
-                        break;
-                    case "endSimulation":
-                        s = SimulationCommands.endSimulation();
-                        sStarted = false;
-                        ObjectNode endNode = MAPPER.createObjectNode();
-                        endNode.put("command", "endSimulation");
-                        endNode.put("message", "Simulation has ended.");
-                        endNode.put("timestamp", comIn.getTimestamp());
-                        output.add(endNode);
-                        break;
-                    case "printEnvConditions":
-                        if (sStarted) {
-                            DebugCommands debug = new DebugCommands(comIn);
-                            TerritorySectionParams current = s.getMap()[s.getBot().getX_position()][s.getBot().getY_position()];
-                            ObjectNode pEnvNode = debug.printEnvConditions(Main.MAPPER, current);
-                            output.add(pEnvNode);
-                        } else {
-                            ObjectNode pEnvNode = MAPPER.createObjectNode();
-                            pEnvNode.put("command", "printEnvConditions");
-                            pEnvNode.put("message", "ERROR: Simulation not started. Cannot perform action");
-                            pEnvNode.put("timestamp", comIn.getTimestamp());
-                            output.add(pEnvNode);
-                        }
-                        break;
-                    case "printMap":
-                        DebugCommands debug2 = new DebugCommands(comIn);
-                        ObjectNode pMap = debug2.printMap(Main.MAPPER, s);
-                        output.add(pMap);
-                }
-            }
-        }
+        Manager manager = new Manager();
+        output = manager.runSimulations(inputLoader.getSimulations(), inputLoader.getCommands());
         /*
          * TODO Implement your function here
          *

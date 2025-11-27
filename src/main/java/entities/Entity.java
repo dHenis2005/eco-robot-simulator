@@ -2,17 +2,24 @@ package entities;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.Data;
 
-public class Entity{
-    public String name;
-    public double mass;
-    public String type;
-    public Entity(String name, double mass,  String type) {
+@Data
+public class Entity {
+    private String name;
+    private double mass;
+    private String type;
+
+    public Entity(final String name, final double mass, final String type) {
         this.name = name;
         this.mass = mass;
         this.type = type;
     }
-    public ObjectNode toJSON(ObjectMapper mapper) {
+
+    /**
+     * Returns the entity as a JSON object.
+     */
+    public ObjectNode toJSON(final ObjectMapper mapper) {
         ObjectNode node = mapper.createObjectNode();
         node.put("type", type);
         node.put("name", name);

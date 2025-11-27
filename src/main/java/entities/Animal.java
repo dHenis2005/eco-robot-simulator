@@ -1,39 +1,52 @@
 package entities;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import fileio.AnimalInput;
 
 public class Animal extends Entity {
-    String type;
-    int state;
-    double organicMatterIncrement = 0;
-    double attackChance = 0;
-    public Animal(AnimalInput input){
-        super(input.getName(), input.getMass(),  input.getType());
-        this.type = input.getType();
-    }
-    public void feed(Animal prey, Plant plant) {
-        if (type.equals("Carnivores") || type.equals("Parasites")) {
-            mass += prey.mass;
-            organicMatterIncrement += 0.5;
-        }
+    private static final double PRECENT = 100.0;
+    private static final double CARNIVORE = 30.0;
+    private static final double HERBIVORE = 85.0;
+    private static final double PARASITES = 10.0;
+    private static final double OMNIVORES = 60.0;
+    private static final double DETRIVORES = 90.0;
+    private static final double ROUNDING = 10.0;
+    private int state;
+//    private double organicMatterIncrement = 0;
+    private double attackChance = 0;
 
+    public Animal(final AnimalInput input) {
+        super(input.getName(), input.getMass(), input.getType());
     }
-    public void animalAttack() {
-        if (type.equals("Carnivores")) {
-            attackChance = (100-30)/10.0;
+
+    /**
+     * Feed
+     */
+    public void feed(final Animal prey, final Plant plant) {
+        if (getType().equals("Carnivores") || getType().equals("Parasites")) {
+            setMass(getMass() + prey.getMass());
+//            organicMatterIncrement += 0.5;
         }
-        if (type.equals("Parasites")) {
-            attackChance = (100-10)/10.0;
+    }
+
+    /**
+     * Calculate the chance to attack bot.
+     */
+    public double animalAttack() {
+        if (getType().equals("Carnivores")) {
+            attackChance = (PRECENT - CARNIVORE) / ROUNDING;
         }
-        if (type.equals("Herbivores")) {
-            attackChance = (100-85)/10.0;
+        if (getType().equals("Parasites")) {
+            attackChance = (PRECENT - PARASITES) / ROUNDING;
         }
-        if (type.equals("Omnivores")) {
-            attackChance = (100-60)/10.0;
+        if (getType().equals("Herbivores")) {
+            attackChance = (PRECENT - HERBIVORE) / ROUNDING;
         }
-        if (type.equals("Detrivores")) {
-            attackChance = (100-90)/10.0;
+        if (getType().equals("Omnivores")) {
+            attackChance = (PRECENT - OMNIVORES) / ROUNDING;
         }
+        if (getType().equals("Detrivores")) {
+            attackChance = (PRECENT - DETRIVORES) / ROUNDING;
+        }
+        return attackChance;
     }
 }

@@ -4,23 +4,42 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import entities.Air;
 import fileio.AirInput;
+import lombok.Data;
 
+@Data
 public class Temperate extends Air {
-    double pollenLevel;
-    public Temperate(AirInput input) {
+    private static final double OXYGEN = 2;
+    private static final double HUMIDITY = 0.7;
+    private static final double MAXSCORE = 84.0;
+    private static final double POLLEN = 0.1;
+    private double pollenLevel;
+
+    public Temperate(final AirInput input) {
         super(input);
         this.pollenLevel = input.getPollenLevel();
     }
+
+    /**
+     * Calculates the air quality based on the input parameters.
+     */
     @Override
     public double airQuality() {
-        return (oxygenLevel*2) + (humidity*0.7) - (pollenLevel*0.1);
+        return (oxygenLevel * OXYGEN) + (humidity * HUMIDITY) - (pollenLevel * POLLEN);
     }
+
+    /**
+     * Returns the max score for this air type.
+     */
     @Override
     public double getMaxScore() {
-        return 84.0;
+        return MAXSCORE;
     }
+
+    /**
+     * Returns the air as a JSON object.
+     */
     @Override
-    public ObjectNode toJSON(ObjectMapper mapper) {
+    public ObjectNode toJSON(final ObjectMapper mapper) {
         ObjectNode node = super.toJSON(mapper);
         node.put("pollenLevel", pollenLevel);
         return node;

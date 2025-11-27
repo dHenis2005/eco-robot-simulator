@@ -2,19 +2,29 @@ package commands;
 
 import fileio.CommandInput;
 import fileio.SimulationInput;
+import lombok.Data;
 import simulation.Simulation;
-
+@Data
 public class SimulationCommands {
-    String command;
-    int timestamp;
-    public SimulationCommands(CommandInput input) {
+    private String command;
+    private int timestamp;
+    private SimulationInput s;
+    public SimulationCommands(final CommandInput input, final SimulationInput s) {
         this.command = input.getCommand();
         this.timestamp = input.getTimestamp();
+        this.s = s;
     }
-    public static Simulation startSimulation(SimulationInput s) {
 
+    /**
+     * Starts a new simulation.
+     */
+    public static Simulation startSimulation(final SimulationInput s) {
         return new Simulation(s);
     }
+
+    /**
+     * Ends the current simulation.
+     */
     public static Simulation endSimulation() {
         return null;
     }

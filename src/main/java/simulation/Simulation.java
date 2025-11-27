@@ -1,19 +1,38 @@
 package simulation;
 
-import entities.*;
-import entities.air.*;
-import entities.soil.*;
-import fileio.*;
+import entities.Animal;
+import entities.Plant;
+import entities.Water;
+import entities.air.Desert;
+import entities.air.Mountain;
+import entities.air.Polar;
+import entities.air.Tropical;
+import entities.air.Temperate;
+import entities.soil.DesertSoil;
+import entities.soil.ForestSoil;
+import entities.soil.GrasslandSoil;
+import entities.soil.SwampSoil;
+import entities.soil.TundraSoil;
+import entities.Soil;
+import entities.Air;
+import fileio.AirInput;
+import fileio.AnimalInput;
+import fileio.PlantInput;
+import fileio.SimulationInput;
+import fileio.SoilInput;
+import fileio.WaterInput;
+import fileio.PairInput;
 import lombok.Data;
+
 @Data
 public class Simulation {
     private TerritorySectionParams[][] map;
-    int energyPoints;
-    String territoryDim;
-    int mapSize;
+    private int energyPoints;
+    private String territoryDim;
+    private int mapSize;
     private Bot bot;
 
-    public Simulation(SimulationInput input) {
+    public Simulation(final SimulationInput input) {
         this.energyPoints = input.getEnergyPoints();
         this.territoryDim = input.getTerritoryDim();
         String x = territoryDim.split("x")[0];
@@ -24,62 +43,63 @@ public class Simulation {
                 map[i][j] = new TerritorySectionParams();
             }
         }
-        this.bot = new Bot(0,0);
+        this.bot = new Bot(0, 0);
     }
-    public void createMap(SimulationInput input) {
+    /**
+    * Go through all the entities received on input and put them at the specified coordinates
+    */
+    public void createMap(final SimulationInput input) {
         for (PlantInput plantInput : input.getTerritorySectionParams().getPlants()) {
-            Plant plant = new Plant(plantInput);
             for (PairInput section : plantInput.getSections()) {
                 int x = section.getX();
                 int y = section.getY();
-                map[x][y].setPlants(plant);
+                Plant plant = new Plant(plantInput);
+                map[x][y].setPlant(plant);
             }
         }
         for (AnimalInput animalInput : input.getTerritorySectionParams().getAnimals()) {
-            Animal animal = new Animal(animalInput);
             for (PairInput section : animalInput.getSections()) {
                 int x = section.getX();
                 int y = section.getY();
-                map[x][y].setAnimals(animal);
+                Animal animal = new Animal(animalInput);
+                map[x][y].setAnimal(animal);
             }
         }
         for (WaterInput waterInput : input.getTerritorySectionParams().getWater()) {
-            Water water = new Water(waterInput);
             for (PairInput section : waterInput.getSections()) {
                 int x = section.getX();
                 int y = section.getY();
+                Water water = new Water(waterInput);
                 map[x][y].setWater(water);
             }
         }
         for (AirInput airInput : input.getTerritorySectionParams().getAir()) {
-            Air air;
-            switch (airInput.getType()) {
-                case "TropicalAir" -> air = new Tropical(airInput);
-                case "DesertAir" -> air = new Desert(airInput);
-                case "PolarAir" -> air = new Polar(airInput);
-                case "TemperateAir" -> air = new Temperate(airInput);
-                case "MountainAir" -> air = new Mountain(airInput);
-                default -> throw new IllegalArgumentException("Unknown air type: " + airInput.getType());
-            }
             for (PairInput section : airInput.getSections()) {
                 int x = section.getX();
                 int y = section.getY();
+                Air air = switch (airInput.getType()) {
+                    case "TropicalAir" -> new Tropical(airInput);
+                    case "DesertAir" -> new Desert(airInput);
+                    case "PolarAir" -> new Polar(airInput);
+                    case "TemperateAir" -> new Temperate(airInput);
+                    case "MountainAir" -> new Mountain(airInput);
+                    default -> null;
+                };
                 map[x][y].setAir(air);
             }
         }
         for (SoilInput soilInput : input.getTerritorySectionParams().getSoil()) {
-            Soil soil;
-            switch (soilInput.getType()) {
-                case "ForestSoil" -> soil = new ForestSoil(soilInput);
-                case "SwampSoil" -> soil = new SwampSoil(soilInput);
-                case "DesertSoil" -> soil = new DesertSoil(soilInput);
-                case "GrasslandSoil" -> soil = new GrasslandSoil(soilInput);
-                case "TundraSoil" -> soil = new TundraSoil(soilInput);
-                default -> throw new IllegalArgumentException("Unknown soil type: " + soilInput.getType());
-            }
             for (PairInput section : soilInput.getSections()) {
                 int x = section.getX();
                 int y = section.getY();
+                Soil soil = switch (soilInput.getType()) {
+                    case "ForestSoil" -> new ForestSoil(soilInput);
+                    case "SwampSoil" -> new SwampSoil(soilInput);
+                    case "DesertSoil" -> new DesertSoil(soilInput);
+                    case "GrasslandSoil" -> new GrasslandSoil(soilInput);
+                    case "TundraSoil" -> new TundraSoil(soilInput);
+                    default -> null;
+                };
                 map[x][y].setSoil(soil);
             }
         }

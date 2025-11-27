@@ -7,49 +7,39 @@ import fileio.CommandInput;
 import simulation.Simulation;
 import simulation.TerritorySectionParams;
 
-public class DebugCommands {
-    String command;
-    int timestamp;
-    public DebugCommands(CommandInput input) {
-        this.command = input.getCommand();
-        this.timestamp = input.getTimestamp();
+public class PrintMap extends Command {
+    private static final int AIR_GOOD = 70;
+    private static final int AIR_MOD = 40;
+    private static final int SOIL_GOOD = 70;
+    private static final int SOIL_MOD = 40;
+    public PrintMap(final CommandInput input) {
+        super(input);
     }
-    public ObjectNode printEnvConditions(ObjectMapper mapper,  TerritorySectionParams params) {
-        ObjectNode root = mapper.createObjectNode();
-        ObjectNode output = mapper.createObjectNode();
-
-        root.put("command", "printEnvConditions");
-
-        output.set("soil", params.getSoil().toJSON(mapper));
-        output.set("plants", params.getPlants().toJSON(mapper));
-        output.set("animals", params.getAnimals().toJSON(mapper));
-        output.set("water", params.getWater().toJSON(mapper));
-        output.set("air", params.getAir().toJSON(mapper));
-
-        root.set("output", output);
-        root.put("timestamp", timestamp);
-
-        return root;
-    }
-    public ObjectNode printMap(ObjectMapper mapper, Simulation s) {
-        ObjectNode root = mapper.createObjectNode();
-        ArrayNode output = mapper.createArrayNode();
-        root.put("command", "printMap");
+    /**
+     * Calls super to get what every command should have.
+     * Iterates through the whole map returning the number of entities and the
+     * quality of the air and soil in each cell.
+     */
+    @Override
+    public ObjectNode print(final ObjectMapper mapper, final Simulation s) {
+        ObjectNode root = super.print(mapper, s);
         if (s == null) {
-            root.put("message", "ERROR: Simulation not started. Cannot perform action");
-            root.put("timestamp", timestamp);
             return root;
         }
+        if (s.getBot().isCharging()) {
+            return root;
+        }
+        ArrayNode output = mapper.createArrayNode();
         for (int i = 0; i < s.getMapSize(); i++) {
             for (int j = 0; j < s.getMapSize(); j++) {
                 ObjectNode sectionNode = mapper.createObjectNode();
                 sectionNode.putArray("section").add(j).add(i);
                 TerritorySectionParams params = s.getMap()[j][i];
                 int obj = 0;
-                if (params.getPlants() != null) {
+                if (params.getPlant() != null) {
                     obj++;
                 }
-                if (params.getAnimals() != null) {
+                if (params.getAnimal() != null) {
                     obj++;
                 }
                 if (params.getWater() != null) {
@@ -57,17 +47,17 @@ public class DebugCommands {
                 }
                 sectionNode.put("totalNrOfObjects", obj);
                 double airQuality = s.getMap()[j][i].getAir().roundedAirQuality();
-                if (airQuality >= 70) {
+                if (airQuality >= AIR_GOOD) {
                     sectionNode.put("airQuality", "good");
-                } else if (airQuality >= 40) {
+                } else if (airQuality >= AIR_MOD) {
                     sectionNode.put("airQuality", "moderate");
                 } else {
                     sectionNode.put("airQuality", "poor");
                 }
                 double soilQuality = s.getMap()[j][i].getSoil().roundedSoilQuality();
-                if (soilQuality >= 70) {
+                if (soilQuality >= SOIL_GOOD) {
                     sectionNode.put("soilQuality", "good");
-                } else if (soilQuality >= 40) {
+                } else if (soilQuality >= SOIL_MOD) {
                     sectionNode.put("soilQuality", "moderate");
                 } else {
                     sectionNode.put("soilQuality", "poor");
@@ -76,7 +66,7 @@ public class DebugCommands {
             }
         }
         root.set("output", output);
-        root.put("timestamp", timestamp);
+        root.put("timestamp", getTimestamp());
         return root;
     }
 }
