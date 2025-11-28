@@ -13,6 +13,7 @@ public class Temperate extends Air {
     private static final double MAXSCORE = 84.0;
     private static final double POLLEN = 0.1;
     private double pollenLevel;
+    private String season;
 
     public Temperate(final AirInput input) {
         super(input);
@@ -43,5 +44,25 @@ public class Temperate extends Air {
         ObjectNode node = super.toJSON(mapper);
         node.put("pollenLevel", pollenLevel);
         return node;
+    }
+    /**
+     * Abstract method for updating the air quality according to the weather.
+     */
+    @Override
+    public double updateAirQuality() {
+        if (season == null) {
+            return roundedAirQuality();
+        }
+        return roundedAirQuality() - (season.equalsIgnoreCase("Spring") ? 15 : 0);
+    }
+    /**
+     * Abstract method for setting the weather.
+     */
+    @Override
+    public void setWeather(Object val) {
+        this.season = (String) val;
+    }
+    public void resetWeather() {
+        season = null;
     }
 }

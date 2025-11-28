@@ -46,7 +46,7 @@ public class PrintMap extends Command {
                     obj++;
                 }
                 sectionNode.put("totalNrOfObjects", obj);
-                double airQuality = s.getMap()[j][i].getAir().roundedAirQuality();
+                double airQuality = s.getMap()[j][i].getAir().roundUpdatedAirQuality();
                 if (airQuality >= AIR_GOOD) {
                     sectionNode.put("airQuality", "good");
                 } else if (airQuality >= AIR_MOD) {

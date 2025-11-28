@@ -3,7 +3,9 @@ package entities;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.SoilInput;
+import lombok.Data;
 
+@Data
 public abstract class Soil extends Entity {
     private static final double ROUNDING = 100.0;
     protected double nitrogen;
@@ -33,8 +35,7 @@ public abstract class Soil extends Entity {
      * Method for rounding the soil quality score.
      */
     public double roundedSoilQuality() {
-        double normalizedSoilQuality = Math.max(0, Math.min(ROUNDING, soilQuality()));
-        return Math.round(normalizedSoilQuality * ROUNDING) / ROUNDING;
+        return round(soilQuality(), ROUNDING);
     }
 
     /**
@@ -49,5 +50,12 @@ public abstract class Soil extends Entity {
         node.put("organicMatter", organicMatter);
         node.put("soilQuality", roundedSoilQuality());
         return node;
+    }
+
+    /**
+     * Method to increase water retention based on water in the cell.
+     */
+    public double addWater(final double val) {
+        return round(waterRetention + val, ROUNDING);
     }
 }

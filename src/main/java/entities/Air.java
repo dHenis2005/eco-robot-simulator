@@ -1,4 +1,5 @@
 package entities;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.AirInput;
@@ -11,8 +12,10 @@ public abstract class Air extends Entity {
     protected double humidity;
     protected double temperature;
     protected double oxygenLevel;
+    private int weatherTimer = 0;
+
     public Air(final AirInput input) {
-        super(input.getName(), input.getMass(),  input.getType());
+        super(input.getName(), input.getMass(), input.getType());
         this.humidity = input.getHumidity();
         this.temperature = input.getTemperature();
         this.oxygenLevel = input.getOxygenLevel();
@@ -22,17 +25,20 @@ public abstract class Air extends Entity {
      * Abstract method for calculating the air quality score.
      */
     public abstract double airQuality();
+
     /**
      * Abstract method for getting the score of the air type.
      */
     public abstract double getMaxScore();
+
     /**
      * Method for rounding the air quality score.
      */
     public double roundedAirQuality() {
-        double normalized = Math.max(0, Math.min(airQuality(), getMaxScore()));
-        return Math.round(normalized * ROUNDING) / ROUNDING;
+        double normalized = Math.max(0, Math.min(airQuality(), ROUNDING));
+        return round(airQuality(), ROUNDING);
     }
+
     /**
      * Method for calculating the toxicity of the air.
      */
@@ -41,12 +47,12 @@ public abstract class Air extends Entity {
         double toxicityAQ = (ROUNDING * (1 - airQualityScore / getMaxScore()));
         return Math.round(toxicityAQ * ROUNDING) / ROUNDING;
     }
+
     /**
      * Method for rounding the toxicity score.
      */
     public double roundedToxicity() {
-        double normalized = Math.max(0, Math.min(toxicity(), getMaxScore()));
-        return Math.round(normalized * ROUNDING) / ROUNDING;
+        return round(toxicity(), getMaxScore());
     }
 
     /**
@@ -58,13 +64,50 @@ public abstract class Air extends Entity {
         node.put("humidity", humidity);
         node.put("temperature", temperature);
         node.put("oxygenLevel", oxygenLevel);
-        node.put("airQuality", roundedAirQuality());
+        node.put("airQuality", roundUpdatedAirQuality());
         return node;
     }
+
     /**
      * Method for checking if the air is toxic.
      */
     public boolean isToxic() {
         return toxicity() > TOXIC * getMaxScore();
+    }
+
+    /**
+     * Abstract method for updating the air quality according to the weather.
+     */
+    public abstract double updateAirQuality();
+
+    /**
+     * Abstract method for setting the weather.
+     */
+    public abstract void setWeather(Object val);
+
+    /**
+     * Abstract method for resetting the weather.
+     */
+    public abstract void resetWeather();
+
+    /**
+     * Rounding for the airQuality.
+     */
+    public double roundUpdatedAirQuality() {
+        return round(updateAirQuality(), ROUNDING);
+    }
+
+    /**
+     * Method used for adding humidity based on water in the cell.
+     */
+    public double addHumidity(double val) {
+        return round(humidity + val, ROUNDING);
+    }
+
+    /**
+     * Method for adding oxygen based on plant in cell.
+     */
+    public double addOxygen(double val) {
+        return round(oxygenLevel + val, ROUNDING);
     }
 }

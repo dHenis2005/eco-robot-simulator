@@ -9,6 +9,8 @@ import commands.PrintEnvConditions;
 import commands.PrintMap;
 import commands.Recharge;
 import commands.SimulationCommands;
+import commands.ScanObj;
+import commands.ChangeWeather;
 import fileio.CommandInput;
 import fileio.SimulationInput;
 
@@ -24,21 +26,24 @@ public class Manager {
     public ArrayNode runSimulations(final List<SimulationInput> simulations,
                                     final List<CommandInput> commands) {
         ArrayNode output = mapper.createArrayNode();
-        for (SimulationInput simIn: simulations) {
-            Simulation s = null;
+        int simIn = 0;
+        Simulation s = null;
             for (CommandInput comIn : commands) {
                 switch (comIn.getCommand()) {
                     case "startSimulation":
-                        s = SimulationCommands.startSimulation(simIn);
-                        s.createMap(simIn);
-                        ObjectNode startNode = mapper.createObjectNode();
-                        startNode.put("command", "startSimulation");
-                        startNode.put("message", "Simulation has started.");
-                        startNode.put("timestamp", comIn.getTimestamp());
-                        output.add(startNode);
+                        if (simIn < simulations.size()) {
+                            s = SimulationCommands.startSimulation(simulations.get(simIn));
+                            s.createMap(simulations.get(simIn));
+                            simIn++;
+                            ObjectNode startNode = mapper.createObjectNode();
+                            startNode.put("command", "startSimulation");
+                            startNode.put("message", "Simulation has started.");
+                            startNode.put("timestamp", comIn.getTimestamp());
+                            output.add(startNode);
+                        }
                         break;
                     case "endSimulation":
-                        s = SimulationCommands.endSimulation();
+                        s = SimulationCommands.endSimulation(s);
                         ObjectNode endNode = mapper.createObjectNode();
                         endNode.put("command", "endSimulation");
                         endNode.put("message", "Simulation has ended.");
@@ -69,11 +74,22 @@ public class Manager {
                         GetEnergy debugEnergy = new GetEnergy(comIn);
                         ObjectNode eNode = debugEnergy.print(mapper, s);
                         output.add(eNode);
+                        break;
+                    case "changeWeatherConditions":
+                        ChangeWeather weather = new ChangeWeather(comIn);
+                        ObjectNode wNode = weather.print(mapper, s);
+                        output.add(wNode);
+                        break;
+                    case "scanObject":
+                        ScanObj scan = new ScanObj(comIn);
+                        ObjectNode sNode = scan.print(mapper, s);
+                        output.add(sNode);
+                        break;
                     default:
                         break;
                 }
             }
-        }
+
 
         return output;
     }

@@ -25,7 +25,15 @@ public class SimulationCommands {
     /**
      * Ends the current simulation.
      */
-    public static Simulation endSimulation() {
+    public static Simulation endSimulation(final Simulation s) {
+        if (s == null) {
+            return null;
+        }
+        s.setEnergyPoints(0);
+        s.setBot(null);
+        s.setMap(null);
+        s.setMapSize(0);
+        s.setTerritoryDim(null);
         return null;
     }
 }

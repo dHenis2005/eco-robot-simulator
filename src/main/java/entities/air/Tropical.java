@@ -13,6 +13,7 @@ public class Tropical extends Air {
     private static final double MAXSCORE = 82.0;
     private static final double CO2 = 0.01;
     private double co2Level;
+    private double rainfall;
 
     public Tropical(final AirInput input) {
         super(input);
@@ -43,5 +44,22 @@ public class Tropical extends Air {
         ObjectNode node = super.toJSON(mapper);
         node.put("co2Level", co2Level);
         return node;
+    }
+    /**
+     * Abstract method for updating the air quality according to the weather.
+     */
+    @Override
+    public double updateAirQuality() {
+        return roundedAirQuality() + (rainfall * 0.3);
+    }
+    /**
+     * Abstract method for setting the weather.
+     */
+    @Override
+    public void setWeather(Object val) {
+        this.rainfall = (double) val;
+    }
+    public void resetWeather() {
+        rainfall = 0;
     }
 }

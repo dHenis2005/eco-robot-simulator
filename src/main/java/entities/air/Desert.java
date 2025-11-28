@@ -12,7 +12,9 @@ public class Desert extends Air {
     private static final double OXYGEN = 2;
     private static final double TEMPERATURE = 0.3;
     private static final double MAXSCORE = 65.0;
+    private static final double STORM = 30;
     private double dustParticles;
+    private boolean desertStorm = false;
 
     public Desert(final AirInput input) {
         super(input);
@@ -41,7 +43,30 @@ public class Desert extends Air {
     @Override
     public ObjectNode toJSON(final ObjectMapper mapper) {
         ObjectNode node = super.toJSON(mapper);
-        node.put("dustParticles", dustParticles);
+//        node.put("dustParticles", dustParticles);
+        node.put("desertStorm", desertStorm);
         return node;
+    }
+    /**
+     * Abstract method for updating the air quality according to the weather.
+     */
+    @Override
+    public double updateAirQuality() {
+        return roundedAirQuality() - (desertStorm ? STORM : 0);
+    }
+    /**
+     * Abstract method for setting the weather.
+     */
+    @Override
+    public void setWeather(final Object val) {
+        this.desertStorm = (boolean) val;
+    }
+
+    /**
+     * Abstract method for resetting the weather.
+     */
+    @Override
+    public void resetWeather() {
+        desertStorm = false;
     }
 }

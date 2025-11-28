@@ -2,6 +2,10 @@ package commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import entities.Air;
+import entities.Plant;
+import entities.Soil;
+import entities.Water;
 import fileio.CommandInput;
 import lombok.Data;
 import simulation.Simulation;
@@ -10,6 +14,7 @@ import java.util.Objects;
 
 @Data
 public abstract class Command {
+    private static final int TIMESTAMP2 = 2;
     private String command;
     private int timestamp;
 
@@ -37,6 +42,7 @@ public abstract class Command {
             node.put("timestamp", timestamp);
             return node;
         }
+        updateWeather(s);
         return node;
     }
 
@@ -53,6 +59,46 @@ public abstract class Command {
             s.getBot().setChargeTimestamp(0);
             s.getBot().setChargeTime(0);
             s.getBot().setCharging(false);
+        }
+    }
+
+    /**
+     * Updates the weather of the map according to the timer.
+     */
+    public void updateWeather(final Simulation s) {
+        for (int i = 0; i < s.getMapSize(); i++) {
+            for (int j = 0; j < s.getMapSize(); j++) {
+                Air air = s.getMap()[i][j].getAir();
+                Water water = s.getMap()[i][j].getWater();
+                Soil soil = s.getMap()[i][j].getSoil();
+                Plant plant = s.getMap()[i][j].getPlant();
+                if (air.getWeatherTimer() == 1) {
+                    air.setWeatherTimer(0);
+                    air.resetWeather();
+                }
+                if (air.getWeatherTimer() > 1) {
+                    air.setWeatherTimer(air.getWeatherTimer() - 1);
+                }
+                if (water != null) {
+                    if (water.isScanned()) {
+                        if (water.getScanTimestamp() % TIMESTAMP2 == getTimestamp() % TIMESTAMP2) {
+                            air.setHumidity(air.addHumidity(0.1));
+                            soil.setWaterRetention(soil.addWater(0.1));
+                        }
+                    }
+                }
+                if (plant != null) {
+                    if (plant.isScanned()) {
+                        plant.setGrowthRate(plant.addGrowth(0.2));
+                        if (plant.getGrowthRate() <= 3) {
+                            plant.oxygenGeneration();
+                            air.setOxygenLevel(air.addOxygen(plant.getOxygenPlant()));
+                        } else {
+                            plant = null;
+                        }
+                    }
+                }
+            }
         }
     }
 }

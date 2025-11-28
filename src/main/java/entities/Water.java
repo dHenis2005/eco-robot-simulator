@@ -22,6 +22,8 @@ public class Water extends Entity {
     private double turbidity;
     private double contaminantIndex;
     private boolean isFrozen;
+    private boolean isScanned = false;
+    private int scanTimestamp = 0;
 
     public Water(final WaterInput input) {
         super(input.getName(), input.getMass(), input.getType());

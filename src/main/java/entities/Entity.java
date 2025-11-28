@@ -27,4 +27,12 @@ public class Entity {
         return node;
     }
 
+    /**
+     * Basic round method
+     */
+    public double round(final double value, final double value2) {
+        double normalized = Math.max(0, Math.min(value, value2));
+        return Math.round(normalized * 100) / 100.0;
+    }
+
 }

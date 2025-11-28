@@ -13,6 +13,7 @@ public class Polar extends Air {
     private static final double ROUNDING = 100.0;
     private static final double ICE = 0.05;
     private double iceCrystalConcentration;
+    private double wind;
 
     public Polar(final AirInput input) {
         super(input);
@@ -44,5 +45,26 @@ public class Polar extends Air {
         ObjectNode node = super.toJSON(mapper);
         node.put("iceCrystalConcentration", iceCrystalConcentration);
         return node;
+    }
+    /**
+     * Abstract method for updating the air quality according to the weather.
+     */
+    @Override
+    public double updateAirQuality() {
+        return roundedAirQuality() - (wind * 0.2);
+    }
+    /**
+     * Abstract method for setting the weather.
+     */
+    @Override
+    public void setWeather(Object val) {
+        this.wind = (double) val;
+    }
+    /**
+     * Abstract method for resetting the weather.
+     */
+    @Override
+    public void resetWeather() {
+        wind = 0;
     }
 }

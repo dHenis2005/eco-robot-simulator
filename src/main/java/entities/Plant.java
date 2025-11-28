@@ -24,6 +24,13 @@ public class Plant extends Entity {
     private double growthRate = 0;
     private double oxygenPlant = 0;
     private double stuckPossibility = 0;
+    private boolean isScanned = false;
+    private int scanTimestamp = 0;
+    private enum  Type {
+        FloweringPlant,
+        Mosses,
+        Algae,
+    }
 
     public Plant(final PlantInput input) {
         super(input.getName(), input.getMass(), input.getType());
@@ -33,19 +40,23 @@ public class Plant extends Entity {
      * Oxygen generation
      */
     public void oxygenGeneration() {
+        status += growthRate;
+        status = round(status,  ROUNDING);
+        double oxygen = 0;
         switch (getType()) {
-            case "FloweringPlants" -> oxygenPlant += O2FLOWERING;
-            case "Mosses" -> oxygenPlant += O2MOSSES;
-            case "Algae" -> oxygenPlant += O2ALGAE;
-            default -> oxygenPlant += 0;
+            case "FloweringPlants" -> oxygen += O2FLOWERING;
+            case "Mosses" -> oxygen += O2MOSSES;
+            case "Algae" -> oxygen += O2ALGAE;
+            default -> oxygen += 0;
         }
         if (status < YOUNGAGE) {
-            oxygenPlant += YOUNG;
+            oxygen += YOUNG;
         } else if (status < MATUREAGE) {
-            oxygenPlant += MATURE;
-        } else if (status < OLDAGE) {
-            oxygenPlant += OLD;
+            oxygen += MATURE;
+        } else if (status <= OLDAGE) {
+            oxygen += OLD;
         }
+        oxygenPlant = oxygen;
     }
 
     /**
@@ -61,6 +72,13 @@ public class Plant extends Entity {
             default -> stuckPossibility = 0;
         }
         return stuckPossibility;
+    }
+
+    /**
+     * Method to modify growth based on entities in cell.
+     */
+    public double addGrowth(final double val) {
+        return round(val, ROUNDING);
     }
 }
 
