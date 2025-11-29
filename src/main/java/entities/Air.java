@@ -35,7 +35,6 @@ public abstract class Air extends Entity {
      * Method for rounding the air quality score.
      */
     public double roundedAirQuality() {
-        double normalized = Math.max(0, Math.min(airQuality(), ROUNDING));
         return round(airQuality(), ROUNDING);
     }
 

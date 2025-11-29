@@ -1,7 +1,9 @@
 package entities;
 
 import fileio.AnimalInput;
+import lombok.Data;
 
+@Data
 public class Animal extends Entity {
     private static final double PRECENT = 100.0;
     private static final double CARNIVORE = 30.0;

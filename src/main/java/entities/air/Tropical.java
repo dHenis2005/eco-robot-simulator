@@ -42,7 +42,7 @@ public class Tropical extends Air {
     @Override
     public ObjectNode toJSON(final ObjectMapper mapper) {
         ObjectNode node = super.toJSON(mapper);
-        node.put("co2Level", co2Level);
+        node.put("co2Level", round(co2Level, 100));
         return node;
     }
     /**

@@ -12,12 +12,18 @@ public class ScanObj extends Command {
     private String smell;
     private String color;
     private String sound;
+
     public ScanObj(final CommandInput input) {
         super(input);
         smell = input.getSmell();
         color = input.getColor();
         sound = input.getSound();
     }
+
+    /**
+     * Method to print desired output.
+     * It checks what type of entity it scans and sets its scan value to true.
+     */
     @Override
     public ObjectNode print(final ObjectMapper mapper, final Simulation s) {
         ObjectNode node = super.print(mapper, s);

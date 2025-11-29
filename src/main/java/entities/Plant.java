@@ -26,18 +26,13 @@ public class Plant extends Entity {
     private double stuckPossibility = 0;
     private boolean isScanned = false;
     private int scanTimestamp = 0;
-    private enum  Type {
-        FloweringPlant,
-        Mosses,
-        Algae,
-    }
 
     public Plant(final PlantInput input) {
         super(input.getName(), input.getMass(), input.getType());
     }
 
     /**
-     * Oxygen generation
+     * Method that adds oxygen in the air based on the plant type and age
      */
     public void oxygenGeneration() {
         status += growthRate;

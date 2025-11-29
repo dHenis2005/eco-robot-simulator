@@ -42,7 +42,7 @@ public abstract class Command {
             node.put("timestamp", timestamp);
             return node;
         }
-        updateWeather(s);
+        updateSimulation(s);
         return node;
     }
 
@@ -63,9 +63,9 @@ public abstract class Command {
     }
 
     /**
-     * Updates the weather of the map according to the timer.
+     * Updates the cells of the map according to interactions between entities and other commands.
      */
-    public void updateWeather(final Simulation s) {
+    public void updateSimulation(final Simulation s) {
         for (int i = 0; i < s.getMapSize(); i++) {
             for (int j = 0; j < s.getMapSize(); j++) {
                 Air air = s.getMap()[i][j].getAir();
