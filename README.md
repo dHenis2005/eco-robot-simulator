@@ -1,48 +1,54 @@
+# Eco-Robot Autonomous Environment Simulator
 
+A modular, object-oriented simulation engine written in Java that models an autonomous exploration robot navigating and analyzing procedural 2D environments. The system models multi-biome environmental conditions, dynamically tracks ecological factors (toxicity, air quality, humidity, soil composition), and processes programmatic agent missions.
 
-# Tema 1 POO  - TerraBot
+---
 
-<div align="center"><img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWZxaTdmdTFoczU5ZW90eTFsN2FwMG5lbDl5dDl5MHBucTB1a2NnZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/voirD51GFZte0/giphy.gif" width="500px"></div>
+## Key Features
 
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/tema)
+- **Command-Driven Architecture:** Executes sequential robotic tasks with energy tracking, input validation, and real-time state reporting.
+- **Dynamic Biome & Entity Simulation:** Simulates discrete geographical zones (Tropical, Polar, Desert, Tundra, Forest) populated by interactive fauna, flora, water sources, and soil profiles.
+- **Ecological Metrics Tracking:** Dynamically calculates localized atmosphere and substrate conditions based on surrounding vegetation density and weather patterns.
+- **Automated Test Harness:** Built-in JSON-driven validation suite verifying simulation invariants, path actions, and error handling.
 
+---
 
-## Skel Structure
+## Architectural Design & Patterns
 
-* src/
-    * checker/ - checker files
-    * fileio/ - contains classes used to read data from the json files
-    * main/
-        * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-        * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-          to the out.txt file. Thus, you can compare this result with ref.
-* input/ - contains the tests in JSON format
-* ref/ - contains all reference output for the tests in JSON format
+### 1. Command Pattern (`commands/`)
+Robot instructions are encapsulated into self-contained command objects implementing a shared `Command` interface:
+- `MoveBot`: Updates agent spatial coordinates and calculates directional movement costs.
+- `ScanObj`: Inspects target adjacent entities and logs environmental telemetry.
+- `Recharge`: Restores robot battery capacity based on local solar/energy sources.
+- `ChangeWeather`: Simulates regional atmospheric shifts affecting local humidity and temperature.
+- `GetEnergy` & `PrintEnvConditions`: Queries internal telemetry and territory snapshots.
 
-## Tests
+### 2. Polymorphic Entity Hierarchy (`entities/`)
+All world components derive from a root `Entity` class, structured into extensible sub-trees:
+- **`Air`:** Models atmospheric regions (`Tropical`, `Polar`, `Desert`, `Mountain`, `Temperate`) with custom oxygen and particle densities.
+- **`Soil`:** Models terrain ground types (`ForestSoil`, `DesertSoil`, `GrasslandSoil`, `SwampSoil`, `TundraSoil`).
+- **`Plant`, `Animal`, `Water`:** Active surface entities that influence surrounding biome parameters during scans and robot actions.
 
-1. test01_initialize_entities 3p
-2. test02_initialize_entities_errors - 2p
-3. test03__move_robot - 5p
-4. test04_move_robot_errors – 2p
-5. test05_env_condition - 2p
-6. test06_update_battery - 3p
-7. test07_update_battery_errors 2p
-8. test08_change_weather - 3p
-9. test09_scan_plant 3p
-10. test10_scan_water 5p
-11. test11_scan_animal - 6p
-12. test12_scan_object_errors – 2p
-13. test13_learn_fact - 4p
-14. test14_improve_environment - 5p
-15. test15_improve_environment_errors – 2p
-16. test16_mid - 6p
-17. test17_multiple_simulations - 3p
-18. test18_multiple_simulations_error - 2p
-19. test19_complex_simple - 6p
-20. test20_complex_errors - 6p
-21. test21_complex_combined - 8p
+### 3. Simulation Controller (`simulation/`)
+- **`Manager` & `Simulation`:** Coordinates batch iterations, territory state maps, and command execution queues.
+- **`Bot`:** Encapsulates the agent state, current grid position, and active battery budget.
 
+---
 
+## Project Structure
 
-<div align="center"><img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWt2djVodmJsc3E1c2RqdWc3emV4aGU5OWVrd2g5ZDFvNHdnOHY1MSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HTCp5FBZ3vEXLDoNOm/giphy.gif" width="500px"></div>
+```text
+Tema1-POO/
+├── input/                  # Test input scenarios in JSON format
+├── ref/                    # Reference ground-truth outputs for validation
+├── pom.xml                 # Maven build, dependency, and plugin configurations
+└── src/
+    ├── main/java/
+    │   ├── commands/       # Command pattern implementations
+    │   ├── entities/       # Entity base classes & biome specializations
+    │   │   ├── air/        # Biome-specific air implementations
+    │   │   └── soil/       # Biome-specific soil implementations
+    │   ├── fileio/         # JSON deserializers and configuration mappers
+    │   ├── simulation/     # Grid manager, robot controller, and state loops
+    │   └── main/Main.java  # Application execution entry point
+    └── test/               # Checkstyle audits and automated unit/functional tests
